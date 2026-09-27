@@ -1,0 +1,47 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=77" ]
+
+[project]
+name = "chp-smoother"
+version = "1.0.0"
+description = """\
+    Cubic smoothing splines on a uniform Hermite grid: a continuous Hodrick-Prescott filter with linear-time Bayesian \
+    inference\
+    """
+readme = "README.md"
+license = "MIT"
+authors = [ { name = "Gerben van Veenendaal", email = "gerbenvv@gmail.com" } ]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [ "numpy" ]
+optional-dependencies.experiments = [ "scipy" ]
+optional-dependencies.fast = [ "scipy" ]
+
+[tool.setuptools]
+py-modules = [ "chp" ]
+package-dir = { "" = "python" }
+
+[tool.black]
+target-version = [ "py310" ]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100
+combine_as_imports = true
+known_first_party = [ "chp" ]
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = "E203,E701"
+
+[tool.pyproject-fmt]
+indent = 4

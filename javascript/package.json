@@ -1,0 +1,39 @@
+{
+    "name": "chp-smoother",
+    "version": "1.0.0",
+    "description": "Cubic smoothing splines on a uniform Hermite grid: a continuous Hodrick-Prescott filter with linear-time Bayesian inference",
+    "main": "chp.js",
+    "files": [
+        "chp.js"
+    ],
+    "scripts": {
+        "test": "node test/test.js",
+        "format": "eslint --fix ."
+    },
+    "author": "Gerben van Veenendaal <gerbenvv@gmail.com>",
+    "license": "MIT",
+    "keywords": [
+        "smoothing spline",
+        "Hodrick-Prescott",
+        "Whittaker smoother",
+        "trend filter",
+        "Bayesian",
+        "credible band"
+    ],
+    "devDependencies": {
+        "@eslint/js": "^9.34.0",
+        "eslint": "^9.39.5",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.6",
+        "globals": "^16.5.0",
+        "prettier": "^3.9.6"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "useTabs": false,
+        "singleQuote": true,
+        "semi": true,
+        "printWidth": 100,
+        "trailingComma": "es5"
+    }
+}

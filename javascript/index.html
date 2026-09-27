@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Continuous HP smoother</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Continuous Hodrick&ndash;Prescott smoother</h1>
+        <p>Click to add points, drag to move them, shift-click or right-click to remove.
+           The curve is the exact minimiser of weighted squared error + (&lambda;<sup>4</sup>/L)&int;f&Prime;&sup2;
+           over cubic Hermite functions on a uniform knot grid; the band is the Bayesian 95% credible band.</p>
+    </header>
+
+    <main>
+        <div id="plot-wrap">
+            <canvas id="plot"></canvas>
+        </div>
+
+        <aside id="panel">
+            <label class="row">
+                <span>Smoothness &lambda; <output id="lambda-value"></output></span>
+                <input type="range" id="lambda" min="-3" max="0" step="0.01" value="-1.3">
+            </label>
+
+            <label class="row">
+                <span>Knots <output id="knots-value"></output></span>
+                <select id="knots">
+                    <option value="auto" selected>auto (&Delta;t = &lambda;/8)</option>
+                    <option value="8">8</option>
+                    <option value="16">16</option>
+                    <option value="32">32</option>
+                    <option value="128">128</option>
+                    <option value="1024">1024</option>
+                    <option value="8192">8192</option>
+                </select>
+            </label>
+
+            <div class="row toggles">
+                <label><input type="checkbox" id="show-band" checked> 95% band</label>
+                <label><input type="checkbox" id="show-samples"> posterior samples</label>
+                <label><input type="checkbox" id="show-knots"> knots</label>
+                <label><input type="checkbox" id="show-hp"> HP filter (on sorted points)</label>
+            </div>
+
+            <div class="row buttons">
+                <button id="auto">Choose &lambda; by GCV</button>
+                <button id="random">Random data</button>
+                <button id="clear">Clear</button>
+            </div>
+
+            <dl id="stats"></dl>
+        </aside>
+    </main>
+
+    <script src="chp.js"></script>
+    <script src="demo.js"></script>
+</body>
+</html>
