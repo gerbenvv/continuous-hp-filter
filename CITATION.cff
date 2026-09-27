@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Cubic Smoothing Splines on a Uniform Hermite Grid: A Continuous Hodrick-Prescott Filter for Irregular, Weighted Data with Linear-Time Bayesian Inference"
+type: software
+authors:
+    -   given-names: Gerben
+        name-particle: van
+        family-names: Veenendaal
+        email: gerbenvv@gmail.com
+repository-code: "https://github.com/gerbenvv/continuous-hp-filter"
+url: "https://github.com/gerbenvv/continuous-hp-filter"
+license: MIT
+version: 1.0.0
+date-released: "2026-09-27"
+keywords:
+    - smoothing spline
+    - Hodrick-Prescott filter
+    - Whittaker smoother
+    - Hermite finite elements
+    - Bayesian credible bands
+preferred-citation:
+    type: unpublished
+    title: "Cubic Smoothing Splines on a Uniform Hermite Grid: A Continuous Hodrick-Prescott Filter for Irregular, Weighted Data with Linear-Time Bayesian Inference"
+    authors:
+        -   given-names: Gerben
+            name-particle: van
+            family-names: Veenendaal
+            email: gerbenvv@gmail.com
+    year: 2026
+    notes: Manuscript
+    url: "https://github.com/gerbenvv/continuous-hp-filter"

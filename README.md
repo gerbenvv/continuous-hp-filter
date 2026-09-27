@@ -170,15 +170,25 @@ foundations of Schoenberg, Reinsch, Wahba and Silverman.
 
 ## Citation
 
+If you use this work (the method, the manuscript or the code), please cite it:
+
+> Gerben van Veenendaal. *Cubic Smoothing Splines on a Uniform Hermite Grid: A Continuous
+> Hodrick–Prescott Filter for Irregular, Weighted Data with Linear-Time Bayesian Inference.*
+> Manuscript, 2026. https://github.com/gerbenvv/continuous-hp-filter
+
 ```bibtex
 @unpublished{vanVeenendaal2026,
     author = {van Veenendaal, Gerben},
     title  = {Cubic Smoothing Splines on a Uniform {H}ermite Grid: A Continuous {H}odrick--{P}rescott
               Filter for Irregular, Weighted Data with Linear-Time {B}ayesian Inference},
     note   = {Manuscript},
-    year   = {2026}
+    year   = {2026},
+    url    = {https://github.com/gerbenvv/continuous-hp-filter}
 }
 ```
+
+GitHub's "Cite this repository" button (from [`CITATION.cff`](CITATION.cff)) gives the same
+reference in other formats.
 
 ## License
 
