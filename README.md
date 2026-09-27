@@ -10,8 +10,9 @@ in the units of the x-axis.
 
 - **Manuscript:** [`paper/manuscript.pdf`](paper/manuscript.pdf) (LaTeX source in
   [`paper/`](paper/)).
-- **Interactive demo:** open [`javascript/index.html`](javascript/index.html) in a browser (no
-  server or dependencies needed).
+- **Interactive demo:** try it online at <https://gerbenvv.github.io/continuous-hp-filter/>, or
+  open [`javascript/index.html`](javascript/index.html) in a browser (no server or dependencies
+  needed).
 
 ![Interactive demo](docs/demo.png)
 
@@ -76,6 +77,7 @@ finite-element smoothing) with a candid assessment of what is and is not new.
 | `javascript/index.html`, `demo.js`, `style.css` | Interactive demo                                                                                  |
 | `javascript/test/`                              | JavaScript tests against the Python reference                                                     |
 | `docs/`                                         | Images used in this README                                                                        |
+| `.github/workflows/pages.yml`                   | Publishes the interactive demo on GitHub Pages                                                    |
 
 ## Quick start
 
