@@ -14,7 +14,7 @@ in the units of the x-axis.
   open [`javascript/index.html`](javascript/index.html) in a browser (no server or dependencies
   needed).
 
-![Interactive demo](docs/demo.png)
+![Interactive demo](https://raw.githubusercontent.com/gerbenvv/continuous-hp-filter/main/docs/demo.png)
 
 ## The method
 
@@ -53,9 +53,9 @@ knot; $`h`$ is a bandwidth in the units of $`x`$ and $`L`$ a fixed length (the d
   which needs only the band of $`A^{-1}`$, computed in $`O(m)`$ by Takahashi selected inversion.
   Posterior samples, effective degrees of freedom, a noise estimate and GCV come at the same cost.
 
-| Frequency response of the HP filter at three sampling rates vs. the continuous filter | Irregular, heteroscedastic data with a gap: fit, 95% credible band and posterior samples |
-| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| ![Gain](docs/gain.png)                                                                | ![Fit](docs/fit.png)                                                                     |
+| Frequency response of the HP filter at three sampling rates vs. the continuous filter       | Irregular, heteroscedastic data with a gap: fit, 95% credible band and posterior samples  |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![Gain](https://raw.githubusercontent.com/gerbenvv/continuous-hp-filter/main/docs/gain.png) | ![Fit](https://raw.githubusercontent.com/gerbenvv/continuous-hp-filter/main/docs/fit.png) |
 
 The manuscript proves these properties, verifies each numerically, and reviews the related
 literature (Whittaker–Henderson graduation, smoothing splines, penalized regression splines,
@@ -83,7 +83,8 @@ finite-element smoothing) with a candid assessment of what is and is not new.
 
 ### Python
 
-Install with `pip install .` (or `pip install .[fast]` to include SciPy).
+Install with `pip install chp-smoother` (or `pip install chp-smoother[fast]` to include SciPy), or
+from a clone with `pip install .`.
 
 ```python
 import numpy as np
