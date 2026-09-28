@@ -14,7 +14,7 @@ to pursue knowledge.
 
 - **Layout.** `paper/` holds the manuscript (LaTeX source, bibliography and generated figure data),
   `python/` the Python implementation (`hpspline.py`) and its tests, and `javascript/` the JavaScript
-  implementation (`chp.js`), its tests and the interactive demo.
+  implementation (`hpspline.js`), its tests and the interactive demo.
 - **Keep the implementations in sync.** Python and JavaScript expose the same method and must give
   the same results. After changing either, regenerate the reference with
   `cd python && python make_js_fixture.py` and run both test suites.

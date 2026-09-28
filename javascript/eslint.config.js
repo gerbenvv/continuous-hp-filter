@@ -47,7 +47,7 @@ module.exports = [
         files: ['demo.js'],
         languageOptions: {
             globals: {
-                CHP: 'readonly',
+                hpspline: 'readonly',
             },
         },
     },

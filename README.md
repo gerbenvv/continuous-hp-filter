@@ -73,7 +73,7 @@ finite-element smoothing) with a candid assessment of what is and is not new.
 | `python/tests/`                                 | Tests against dense least squares, SciPy's exact smoothing spline, dense inverses and Monte Carlo |
 | `python/experiments.py`                         | Reproduces all figures and numbers in the manuscript                                              |
 | `python/make_js_fixture.py`                     | Writes the reference results used by the JavaScript tests                                         |
-| `javascript/chp.js`                             | JavaScript implementation (browser global `CHP` or CommonJS/Node module, no dependencies)         |
+| `javascript/hpspline.js`                        | JavaScript implementation (browser global `hpspline` or CommonJS/Node module, no dependencies)    |
 | `javascript/index.html`, `demo.js`, `style.css` | Interactive demo                                                                                  |
 | `javascript/test/`                              | JavaScript tests against the Python reference                                                     |
 | `docs/`                                         | Images used in this README                                                                        |
@@ -89,13 +89,13 @@ from a clone with `pip install .`.
 ```python
 import numpy as np
 
-from hpspline import CHPSmoother, select_lambda
+from hpspline import HPSpline, select_lambda
 
 x = np.sort(np.random.rand(200))
 y = np.sin(2 * np.pi * x) + 0.1 * np.random.randn(200)
 
 # The bandwidth `lam` is h; optionally pass `w=weights` or `sigma=known_std` to `fit`.
-smoother = CHPSmoother(lam=0.05).fit(x, y)
+smoother = HPSpline(lam=0.05).fit(x, y)
 
 # Function and derivatives, anywhere.
 xs = np.linspace(0, 1, 1000)
@@ -120,9 +120,9 @@ Options: `m` (number of knots) or `dt` (knot spacing; default `lam / 8`), `bound
 ### JavaScript
 
 ```html
-<script src="chp.js"></script>
+<script src="hpspline.js"></script>
 <script>
-    const smoother = new CHP.CHPSmoother(0.05).fit(x, y, { w }); // Or { sigma }.
+    const smoother = new hpspline.HPSpline(0.05).fit(x, y, { w }); // Or { sigma }.
 
     smoother.evaluate(0.3);
     smoother.evaluate(0.3, 1);
@@ -135,11 +135,11 @@ Options: `m` (number of knots) or `dt` (knot spacing; default `lam / 8`), `bound
     smoother.noiseVariance();
     smoother.gcv();
 
-    CHP.selectLambda(x, y).lambda;
+    hpspline.selectLambda(x, y).lambda;
 </script>
 ```
 
-In Node.js: `const CHP = require('./javascript/chp.js');`. A million observations on a million
+In Node.js: `const hpspline = require('./javascript/hpspline.js');`. A million observations on a million
 knots fit in about 0.3 s.
 
 ## Development

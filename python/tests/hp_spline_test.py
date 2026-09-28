@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from hpspline import CHPSmoother, hermite_basis
+from hpspline import HPSpline, hermite_basis
 
 try:
     from scipy.interpolate import make_smoothing_spline
@@ -24,7 +24,7 @@ def make_data(
     return x, y, w
 
 
-def get_design_matrix(smoother: CHPSmoother, x: np.ndarray) -> np.ndarray:
+def get_design_matrix(smoother: HPSpline, x: np.ndarray) -> np.ndarray:
     """Returns the dense matrix mapping the parameters to the function values at `x`."""
 
     index, z = smoother._locate(x)
@@ -37,7 +37,7 @@ def get_design_matrix(smoother: CHPSmoother, x: np.ndarray) -> np.ndarray:
 
 
 def solve_dense_reference(
-    smoother: CHPSmoother, x: np.ndarray, y: np.ndarray, w: np.ndarray
+    smoother: HPSpline, x: np.ndarray, y: np.ndarray, w: np.ndarray
 ) -> tuple[np.ndarray, np.ndarray]:
     """Solves the same problem densely, integrating `f''^2` with Gauss-Legendre quadrature."""
 
@@ -62,10 +62,10 @@ def solve_dense_reference(
     return np.linalg.solve(matrix, rhs), matrix
 
 
-class CHPSmootherTest(unittest.TestCase):
+class HPSplineTest(unittest.TestCase):
     def test_matches_dense_reference(self):
         x, y, w = make_data()
-        smoother = CHPSmoother(0.05, m=40).fit(x, y, w)
+        smoother = HPSpline(0.05, m=40).fit(x, y, w)
 
         theta, _ = solve_dense_reference(smoother, x, y, w)
 
@@ -73,7 +73,7 @@ class CHPSmootherTest(unittest.TestCase):
 
     def test_gradient_vanishes(self):
         x, y, w = make_data()
-        smoother = CHPSmoother(0.05, m=30).fit(x, y, w)
+        smoother = HPSpline(0.05, m=30).fit(x, y, w)
 
         rng = np.random.default_rng(0)
         base = smoother.loss()
@@ -92,7 +92,7 @@ class CHPSmootherTest(unittest.TestCase):
 
     def test_penalty_formula_matches_quadrature(self):
         x, y, w = make_data()
-        smoother = CHPSmoother(0.05, m=30).fit(x, y, w)
+        smoother = HPSpline(0.05, m=30).fit(x, y, w)
 
         fine = np.linspace(smoother.t0_, smoother.t0_ + (smoother.m_ - 1) * smoother.dt_, 200001)
         integrate = np.trapezoid if hasattr(np, "trapezoid") else np.trapz
@@ -106,13 +106,13 @@ class CHPSmootherTest(unittest.TestCase):
         fine = np.linspace(0, 1, 2001)
 
         # Knots exactly at the data.
-        smoother = CHPSmoother(0.08, m=41).fit(x, y, w)
+        smoother = HPSpline(0.08, m=41).fit(x, y, w)
         exact = make_smoothing_spline(x, y, w=w / w.sum(), lam=smoother.alpha_)
 
         self.assertLess(np.max(np.abs(smoother(fine) - exact(fine))), 1e-8)
 
         # Extra knots between the data do not change the exact solution either.
-        smoother = CHPSmoother(0.08, m=161).fit(x, y, w)
+        smoother = HPSpline(0.08, m=161).fit(x, y, w)
 
         self.assertLess(np.max(np.abs(smoother(fine) - exact(fine))), 1e-8)
 
@@ -125,7 +125,7 @@ class CHPSmootherTest(unittest.TestCase):
         errors = []
 
         for m in (11, 21, 41, 81, 161, 321):
-            smoother = CHPSmoother(0.05, m=m).fit(x, y, w)
+            smoother = HPSpline(0.05, m=m).fit(x, y, w)
 
             if exact is None:
                 exact = make_smoothing_spline(x, y, w=w / w.sum(), lam=smoother.alpha_)
@@ -139,10 +139,10 @@ class CHPSmootherTest(unittest.TestCase):
 
     def test_scale_invariance(self):
         x, y, w = make_data()
-        reference = CHPSmoother(0.05, m=50).fit(x, y, w)
+        reference = HPSpline(0.05, m=50).fit(x, y, w)
 
         for scale in (1e-3, 7.0, 1e4):
-            scaled = CHPSmoother(0.05 * scale, m=50).fit(x * scale, y, w)
+            scaled = HPSpline(0.05 * scale, m=50).fit(x * scale, y, w)
             _, h, k = scaled.knots
 
             self.assertTrue(np.allclose(h, reference.knots[1], atol=1e-8))
@@ -150,7 +150,7 @@ class CHPSmootherTest(unittest.TestCase):
 
     def test_covariance_band_and_edf_match_dense(self):
         x, y, w = make_data()
-        smoother = CHPSmoother(0.03, m=40).fit(x, y, w)
+        smoother = HPSpline(0.03, m=40).fit(x, y, w)
 
         _, matrix = solve_dense_reference(smoother, x, y, w)
         inverse = np.linalg.inv(matrix)
@@ -172,12 +172,12 @@ class CHPSmootherTest(unittest.TestCase):
         x, y, _ = make_data(n=30, irregular=False)
 
         # A very smooth fit is a straight line; a very rough one interpolates.
-        self.assertLess(abs(CHPSmoother(3.0, m=30).fit(x, y).edf - 2.0), 1e-3)
-        self.assertLess(abs(CHPSmoother(1e-5, m=30).fit(x, y).edf - 30.0), 1e-3)
+        self.assertLess(abs(HPSpline(3.0, m=30).fit(x, y).edf - 2.0), 1e-3)
+        self.assertLess(abs(HPSpline(1e-5, m=30).fit(x, y).edf - 30.0), 1e-3)
 
     def test_posterior_samples_match_std(self):
         x, y, _ = make_data(n=40)
-        smoother = CHPSmoother(0.1, m=20).fit(x, y)
+        smoother = HPSpline(0.1, m=20).fit(x, y)
 
         grid = np.linspace(0, 1, 7)
         samples = smoother.evaluate(smoother.sample(20000, rng=3), grid)
@@ -195,7 +195,7 @@ class CHPSmootherTest(unittest.TestCase):
             x = np.sort(rng.uniform(0, 1, 200))
             y = np.sin(2 * np.pi * x) + 0.2 * rng.standard_normal(x.size)
 
-            smoother = CHPSmoother(0.04, m=100).fit(x, y, sigma=0.2)
+            smoother = HPSpline(0.04, m=100).fit(x, y, sigma=0.2)
             error = np.abs(smoother(grid) - np.sin(2 * np.pi * grid))
 
             hits.append(error < 2 * smoother.std(grid))

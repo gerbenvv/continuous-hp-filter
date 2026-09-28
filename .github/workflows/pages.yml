@@ -27,7 +27,7 @@ jobs:
             -   name: Assemble the site
                 run: |
                     mkdir site
-                    cp javascript/index.html javascript/demo.js javascript/style.css javascript/chp.js site/
+                    cp javascript/index.html javascript/demo.js javascript/style.css javascript/hpspline.js site/
 
             -   name: Check that every file the demo loads is in the site
                 run: |

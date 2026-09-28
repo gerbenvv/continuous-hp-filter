@@ -4,7 +4,7 @@ from unittest import mock
 import numpy as np
 
 import hpspline
-from hpspline import CHPSmoother, hermite_basis
+from hpspline import HPSpline, hermite_basis
 
 
 class BandedLinearAlgebraTest(unittest.TestCase):
@@ -47,10 +47,10 @@ class BandedLinearAlgebraTest(unittest.TestCase):
         y = np.sin(2 * np.pi * x) + 0.1 * rng.standard_normal(x.size)
         w = rng.uniform(0.5, 2.0, x.size)
 
-        with_scipy = CHPSmoother(0.05, m=30).fit(x, y, w)
+        with_scipy = HPSpline(0.05, m=30).fit(x, y, w)
 
         with mock.patch.object(hpspline, "SCIPY_LINALG", None):
-            without_scipy = CHPSmoother(0.05, m=30).fit(x, y, w)
+            without_scipy = HPSpline(0.05, m=30).fit(x, y, w)
             samples_without_scipy = without_scipy.sample(3, rng=1)
 
         self.assertTrue(np.allclose(with_scipy.theta_, without_scipy.theta_, atol=1e-12))

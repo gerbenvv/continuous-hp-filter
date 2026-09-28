@@ -1,4 +1,4 @@
-"""Continuous Hodrick-Prescott (CHP) smoother.
+"""Continuous Hodrick-Prescott smoother as a cubic spline (HP spline).
 
 Fits a C^1 piecewise cubic Hermite function `f` on a uniform, data-independent knot grid
 `t_1 < t_2 < ... < t_m` by minimizing
@@ -269,7 +269,7 @@ def selected_inverse_banded(factor: np.ndarray) -> np.ndarray:
     return np.array(inverse)
 
 
-class CHPSmoother:
+class HPSpline:
     """Continuous Hodrick-Prescott smoother.
 
     Args:
@@ -372,7 +372,7 @@ class CHPSmoother:
         y: Any,
         w: Any | None = None,
         sigma: Any | None = None,
-    ) -> "CHPSmoother":
+    ) -> "HPSpline":
         """Fits the smoother to points `(x_i, y_i)`.
 
         Args:
@@ -659,7 +659,7 @@ def select_lambda(
         w: Relative weights.
         lams: Candidate values; by default 25 log-spaced values relative to the data extent.
         refine: Whether to refine the best grid value with golden-section search.
-        **kwargs: Passed to `CHPSmoother`.
+        **kwargs: Passed to `HPSpline`.
 
     Returns:
         The best `lam`, the candidate values and their GCV scores.
@@ -674,7 +674,7 @@ def select_lambda(
     lams = np.asarray(lams, dtype=np.float64)
 
     def get_score(lam: float) -> float:
-        return CHPSmoother(lam, **kwargs).fit(x, y, w).gcv()
+        return HPSpline(lam, **kwargs).fit(x, y, w).gcv()
 
     scores = np.array([get_score(lam) for lam in lams])
     best = int(np.argmin(scores))
@@ -705,13 +705,13 @@ def select_lambda(
 
 
 def lambda_from_hp(lam_hp: float, spacing: float) -> float:
-    """Returns the CHP length scale equivalent to a classic HP parameter at the given spacing."""
+    """Returns the HP spline length scale equal to a classic HP parameter at a spacing."""
 
     return spacing * lam_hp**0.25
 
 
 def hp_from_lambda(lam: float, spacing: float) -> float:
-    """Returns the classic HP parameter equivalent to a CHP length scale at the given spacing."""
+    """Returns the classic HP parameter equal to an HP spline length scale at a spacing."""
 
     return (lam / spacing) ** 4
 

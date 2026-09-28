@@ -1,5 +1,5 @@
 /*
- * Continuous Hodrick-Prescott (CHP) smoother.
+ * Continuous Hodrick-Prescott smoother as a cubic spline (HP spline).
  *
  * Fits a C^1 piecewise cubic Hermite function f on a uniform, data-independent knot grid by
  * minimizing
@@ -14,14 +14,14 @@
  * Slopes are stored scaled by the knot spacing, p_j = dt * k_j. The parameter vector is
  * theta = [h_1, p_1, h_2, p_2, ..., h_m, p_m].
  *
- * Works as a browser global (window.CHP) and as a CommonJS / Node module.
+ * Works as a browser global (window.hpspline) and as a CommonJS / Node module.
  */
 
 (function (root, factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
-        root.CHP = factory();
+        root.hpspline = factory();
     }
 })(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
@@ -261,7 +261,7 @@
         return [minimum, maximum];
     }
 
-    class CHPSmoother {
+    class HPSpline {
         /**
          * Creates a smoother.
          *
@@ -696,7 +696,7 @@
 
         const getScore = (lambda) => {
             try {
-                return new CHPSmoother(lambda, smootherOptions).fit(x, y, { w: options.w }).gcv();
+                return new HPSpline(lambda, smootherOptions).fit(x, y, { w: options.w }).gcv();
             } catch (_error) {
                 return Infinity;
             }
@@ -746,14 +746,14 @@
     }
 
     /**
-     * Returns the CHP length scale equivalent to a classic HP parameter at the given spacing.
+     * Returns the HP spline length scale equal to a classic HP parameter at a spacing.
      */
     function lambdaFromHp(lambdaHp, spacing) {
         return spacing * Math.pow(lambdaHp, 0.25);
     }
 
     /**
-     * Returns the classic HP parameter equivalent to a CHP length scale at the given spacing.
+     * Returns the classic HP parameter equal to an HP spline length scale at a spacing.
      */
     function hpFromLambda(lambda, spacing) {
         return Math.pow(lambda / spacing, 4);
@@ -791,7 +791,7 @@
     return {
         BANDWIDTH,
         ELEMENT_STIFFNESS,
-        CHPSmoother,
+        HPSpline,
         hermiteBasis,
         choleskyBanded,
         choSolveBanded,

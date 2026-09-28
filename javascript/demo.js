@@ -1,4 +1,4 @@
-// Interactive demo for chp.js. Data live in the unit square; the knot domain is [0, 1].
+// Interactive demo for hpspline.js. Data live in the unit square; the knot domain is [0, 1].
 (function () {
     'use strict';
 
@@ -21,7 +21,7 @@
     };
 
     const points = [];
-    const random = CHP.seededRandom(12345);
+    const random = hpspline.seededRandom(12345);
 
     let dragging = -1;
     let sampleSeed = 1;
@@ -185,9 +185,9 @@
         const sortedX = order.map((i) => xs[i]);
         const spacing = (sortedX[sortedX.length - 1] - sortedX[0]) / (sortedX.length - 1);
 
-        const trend = CHP.hpFilter(
+        const trend = hpspline.hpFilter(
             order.map((i) => ys[i]),
-            CHP.hpFromLambda(getLambda(), spacing)
+            hpspline.hpFromLambda(getLambda(), spacing)
         );
 
         drawPath(sortedX, Array.from(trend), colors.hp, 1.5);
@@ -230,7 +230,7 @@
         let smoother;
 
         try {
-            smoother = new CHP.CHPSmoother(getLambda(), getSmootherOptions()).fit(xs, ys);
+            smoother = new hpspline.HPSpline(getLambda(), getSmootherOptions()).fit(xs, ys);
         } catch (error) {
             setStats([['error', error.message]]);
             drawPoints(colors);
@@ -253,7 +253,7 @@
         }
 
         if (controls.samples.checked) {
-            const sampleRandom = CHP.seededRandom(sampleSeed);
+            const sampleRandom = hpspline.seededRandom(sampleSeed);
 
             for (let i = 0; i < 6; ++i) {
                 const theta = smoother.sample(sampleRandom);
@@ -279,7 +279,7 @@
             });
         }
 
-        const hpLambda = CHP.hpFromLambda(getLambda(), 1 / Math.max(points.length - 1, 1));
+        const hpLambda = hpspline.hpFromLambda(getLambda(), 1 / Math.max(points.length - 1, 1));
 
         controls.knotsValue.textContent = `m = ${smoother.m}`;
         setStats([
@@ -396,7 +396,7 @@
             return;
         }
 
-        const { lambda: best } = CHP.selectLambda(
+        const { lambda: best } = hpspline.selectLambda(
             points.map((p) => p[0]),
             points.map((p) => p[1]),
             { smoother: getSmootherOptions() }

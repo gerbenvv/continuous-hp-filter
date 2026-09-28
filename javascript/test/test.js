@@ -1,10 +1,10 @@
-// Cross-checks chp.js against the Python reference (fixture.json). Run with `npm test`.
+// Cross-checks hpspline.js against the Python reference (fixture.json). Run with `npm test`.
 'use strict';
 
 const assert = require('assert');
 const path = require('path');
 
-const CHP = require(path.join(__dirname, '..', 'chp.js'));
+const hpspline = require(path.join(__dirname, '..', 'hpspline.js'));
 const fixture = require('./fixture.json');
 
 let failures = 0;
@@ -43,7 +43,7 @@ const { x, y, w, grid } = fixture;
 
 fixture.cases.forEach((reference, index) => {
     test(`case ${index} (${JSON.stringify(reference.options)})`, () => {
-        const smoother = new CHP.CHPSmoother(reference.lam, reference.options).fit(x, y, { w });
+        const smoother = new hpspline.HPSpline(reference.lam, reference.options).fit(x, y, { w });
 
         assert.strictEqual(smoother.m, reference.m);
         assert(Math.abs(smoother.dt - reference.dt) < 1e-12);
@@ -64,14 +64,14 @@ fixture.cases.forEach((reference, index) => {
 });
 
 test('known sigma', () => {
-    const smoother = new CHP.CHPSmoother(0.5).fit(x, y, { sigma: 0.15 });
+    const smoother = new hpspline.HPSpline(0.5).fit(x, y, { sigma: 0.15 });
     const deviations = grid.map((v) => smoother.std(v));
 
     assertClose(deviations, fixture.sigma_std, 1e-7, 'std');
 });
 
 test('GCV lambda selection', () => {
-    const { lambda } = CHP.selectLambda(x, y);
+    const { lambda } = hpspline.selectLambda(x, y);
 
     assert(
         Math.abs(lambda / fixture.best_lambda - 1) < 1e-3,
@@ -80,12 +80,12 @@ test('GCV lambda selection', () => {
 });
 
 test('HP filter', () => {
-    assertClose(CHP.hpFilter(y, 1600), fixture.hp, 1e-10, 'trend');
+    assertClose(hpspline.hpFilter(y, 1600), fixture.hp, 1e-10, 'trend');
 });
 
 test('posterior samples have the right spread', () => {
-    const smoother = new CHP.CHPSmoother(0.5).fit(x, y, { w });
-    const random = CHP.seededRandom(42);
+    const smoother = new hpspline.HPSpline(0.5).fit(x, y, { w });
+    const random = hpspline.seededRandom(42);
     const probe = 5.0;
     const count = 20000;
 
@@ -109,8 +109,8 @@ test('posterior samples have the right spread', () => {
 });
 
 test('scale invariance', () => {
-    const reference = new CHP.CHPSmoother(0.5, { m: 200 }).fit(x, y);
-    const scaled = new CHP.CHPSmoother(0.5 * 1000, { m: 200 }).fit(
+    const reference = new hpspline.HPSpline(0.5, { m: 200 }).fit(x, y);
+    const scaled = new hpspline.HPSpline(0.5 * 1000, { m: 200 }).fit(
         x.map((v) => v * 1000),
         y
     );
@@ -120,7 +120,7 @@ test('scale invariance', () => {
 
 test('speed: 100k points, 100k knots', () => {
     const n = 100000;
-    const random = CHP.seededRandom(1);
+    const random = hpspline.seededRandom(1);
     const xs = new Float64Array(n);
     const ys = new Float64Array(n);
 
@@ -130,7 +130,7 @@ test('speed: 100k points, 100k knots', () => {
     }
 
     const start = Date.now();
-    const smoother = new CHP.CHPSmoother(0.001, { m: 100000 }).fit(xs, ys);
+    const smoother = new hpspline.HPSpline(0.001, { m: 100000 }).fit(xs, ys);
     const fitTime = Date.now() - start;
 
     smoother.std(0.5);

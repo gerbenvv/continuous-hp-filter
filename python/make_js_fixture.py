@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 
-from hpspline import CHPSmoother, hp_filter, select_lambda
+from hpspline import HPSpline, hp_filter, select_lambda
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ def main() -> None:
     for case in CASES:
         options = dict(case)
         lam = options.pop("lam")
-        smoother = CHPSmoother(lam, **options).fit(x, y, w)
+        smoother = HPSpline(lam, **options).fit(x, y, w)
 
         cases.append(
             dict(
@@ -59,7 +59,7 @@ def main() -> None:
             )
         )
 
-    sigma_smoother = CHPSmoother(0.5).fit(x, y, sigma=0.15)
+    sigma_smoother = HPSpline(0.5).fit(x, y, sigma=0.15)
     best_lambda, _, _ = select_lambda(x, y)
 
     fixture = dict(

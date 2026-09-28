@@ -17,7 +17,7 @@ import numpy as np
 from scipy.interpolate import make_smoothing_spline
 
 import hpspline
-from hpspline import CHPSmoother, hp_filter, select_lambda
+from hpspline import HPSpline, hp_filter, select_lambda
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -26,15 +26,15 @@ SCRIPT_PATH: Path = Path(__file__).resolve().parent
 OUTPUT_PATH: Path = SCRIPT_PATH.parent / "paper" / "data"
 
 # The JavaScript implementation, timed through Node.js.
-JAVASCRIPT_FILE_PATH: Path = SCRIPT_PATH.parent / "javascript" / "chp.js"
+JAVASCRIPT_FILE_PATH: Path = SCRIPT_PATH.parent / "javascript" / "hpspline.js"
 
 # Problem sizes (observations and knots) for the timing experiment.
 TIMING_SIZES: tuple[int, ...] = (1_000, 3_000, 10_000, 30_000, 100_000, 300_000, 1_000_000)
 
 # Node.js script that times the JavaScript implementation; prints `[n, fit ms, band ms]` rows.
 NODE_TIMING_SCRIPT: str = r"""
-const CHP = require(process.argv[1]);
-const random = CHP.seededRandom(1);
+const hpspline = require(process.argv[1]);
+const random = hpspline.seededRandom(1);
 const output = [];
 
 for (const n of JSON.parse(process.argv[2])) {
@@ -51,7 +51,7 @@ for (const n of JSON.parse(process.argv[2])) {
 
     for (let repeat = 0; repeat < 3; ++repeat) {
         let start = process.hrtime.bigint();
-        const smoother = new CHP.CHPSmoother(0.01, { m: n }).fit(xs, ys);
+        const smoother = new hpspline.HPSpline(0.01, { m: n }).fit(xs, ys);
         best = Math.min(best, Number(process.hrtime.bigint() - start) / 1e6);
 
         start = process.hrtime.bigint();
@@ -114,7 +114,7 @@ def run_fit_experiment(numbers: NumberCollector, rng: np.random.Generator) -> No
     y = get_truth(x) + noise * rng.standard_normal(x.size)
 
     lam, _, _ = select_lambda(x, y, w=1 / noise**2)
-    smoother = CHPSmoother(lam, bounds=(-0.05, 1.05)).fit(x, y, sigma=noise)
+    smoother = HPSpline(lam, bounds=(-0.05, 1.05)).fit(x, y, sigma=noise)
 
     grid = np.linspace(-0.05, 1.05, 600)
     samples = smoother.evaluate(smoother.sample(4, rng=11), grid)
@@ -146,7 +146,7 @@ def run_exactness_experiment(numbers: NumberCollector, rng: np.random.Generator)
     exact_errors = []
 
     for m in (101, 201, 401):
-        smoother = CHPSmoother(0.05, m=m).fit(x, y)
+        smoother = HPSpline(0.05, m=m).fit(x, y)
         exact = make_smoothing_spline(x, y, w=np.full(x.size, 1 / x.size), lam=smoother.alpha_)
         exact_errors.append(np.max(np.abs(smoother(fine) - exact(fine))))
 
@@ -164,7 +164,7 @@ def run_exactness_experiment(numbers: NumberCollector, rng: np.random.Generator)
 
         for ratio in (0.25, 0.5, 1, 2, 4, 8, 16, 32):
             m = int(np.ceil((x.max() - x.min()) * ratio / bandwidth)) + 1
-            smoother = CHPSmoother(bandwidth, m=m, normalization="data").fit(x, y)
+            smoother = HPSpline(bandwidth, m=m, normalization="data").fit(x, y)
 
             if exact is None:
                 weights = np.full(x.size, 1 / x.size)
@@ -188,11 +188,11 @@ def run_exactness_experiment(numbers: NumberCollector, rng: np.random.Generator)
     numbers.add("convergenceAtEight", rows[rows[:, 0] >= 7.5][0, 1], "{:.1e}")
 
     # Scale invariance on the same irregular data.
-    reference = CHPSmoother(0.05, m=200).fit(x, y)
+    reference = HPSpline(0.05, m=200).fit(x, y)
     worst = 0.0
 
     for scale in (1e-6, 1e-3, 60.0, 86400.0, 1e6):
-        scaled = CHPSmoother(0.05 * scale, m=200).fit(x * scale, y)
+        scaled = HPSpline(0.05 * scale, m=200).fit(x * scale, y)
         worst = max(worst, np.max(np.abs(scaled.knots[1] - reference.knots[1])))
 
     numbers.add("scaleError", worst, "{:.1e}")
@@ -207,7 +207,7 @@ def run_kernel_experiment(numbers: NumberCollector) -> None:
     impulse = np.zeros(num_points)
     impulse[num_points // 2] = 1.0
 
-    smoother = CHPSmoother(bandwidth, m=num_points, normalization=2.0).fit(x, impulse)
+    smoother = HPSpline(bandwidth, m=num_points, normalization=2.0).fit(x, impulse)
 
     u = np.linspace(-6 * bandwidth, 6 * bandwidth, 601)
     kernel = smoother(u) / (x[1] - x[0])
@@ -269,7 +269,7 @@ def run_hp_experiment(numbers: NumberCollector) -> None:
         month=(t_month, y_month), quarter=(t_quarter, y_quarter), year=(t_year, y_year)
     )
     smoothers = {
-        label: CHPSmoother(
+        label: HPSpline(
             bandwidth, dt=1 / 48, bounds=(0, t_month[-1]), normalization=t_month[-1]
         ).fit(t, values)
         for label, (t, values) in samplings.items()
@@ -358,7 +358,7 @@ def run_bayesian_experiment(numbers: NumberCollector) -> None:
         y = get_truth(x) + 0.2 * rng.standard_normal(x.size)
 
         lam, _, _ = select_lambda(x, y, lams=np.logspace(-2.5, -0.5, 9))
-        smoother = CHPSmoother(lam, normalization="data").fit(x, y, sigma=0.2)
+        smoother = HPSpline(lam, normalization="data").fit(x, y, sigma=0.2)
 
         hits.append(np.abs(smoother(probe) - get_truth(probe)) < 1.96 * smoother.std(probe))
 
@@ -372,7 +372,7 @@ def run_gcv_experiment(numbers: NumberCollector, rng: np.random.Generator) -> No
     y = get_truth(x) + 0.15 * rng.standard_normal(x.size)
 
     best, lams, scores = select_lambda(x, y, lams=np.logspace(-3, 0, 40))
-    edfs = [CHPSmoother(lam).fit(x, y).edf for lam in lams]
+    edfs = [HPSpline(lam).fit(x, y).edf for lam in lams]
 
     save_columns("gcv.dat", [lams, scores, edfs], "lam gcv edf")
     numbers.add("gcvBest", best, "{:.3f}")
@@ -396,7 +396,7 @@ def run_timing_experiment(numbers: NumberCollector, rng: np.random.Generator) ->
         x = rng.uniform(0, 1, n)
         y = get_truth(x) + 0.1 * rng.standard_normal(n)
 
-        smoother, fit_time = measure_time(lambda: CHPSmoother(0.01, m=n).fit(x, y))
+        smoother, fit_time = measure_time(lambda: HPSpline(0.01, m=n).fit(x, y))
 
         # The pure-Python selected inverse is skipped for the largest size.
         band_time = np.nan

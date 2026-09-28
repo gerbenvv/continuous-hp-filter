@@ -1,10 +1,10 @@
 {
-    "name": "chp-smoother",
+    "name": "hpspline",
     "version": "1.0.0",
     "description": "Cubic smoothing splines on a uniform Hermite grid: a continuous Hodrick-Prescott filter with linear-time Bayesian inference",
-    "main": "chp.js",
+    "main": "hpspline.js",
     "files": [
-        "chp.js"
+        "hpspline.js"
     ],
     "scripts": {
         "test": "node test/test.js",
