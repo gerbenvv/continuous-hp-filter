@@ -2,7 +2,7 @@
 
 ## 1.0.0 (2026-09-28)
 
-The first release of `chp-smoother`, the Python implementation of the continuous Hodrick–Prescott
+The first release of `hpspline`, the Python implementation of the continuous Hodrick–Prescott
 filter: cubic smoothing splines on a uniform Hermite grid, for irregular and weighted data, with
 linear-time Bayesian inference.
 
@@ -13,4 +13,4 @@ linear-time Bayesian inference.
 - `select_lambda` chooses the bandwidth by generalized cross-validation.
 - `hp_filter`, `lambda_from_hp` and `hp_from_lambda` relate the bandwidth to the classical
   Hodrick–Prescott filter.
-- NumPy only, with SciPy's LAPACK banded routines used when installed (`pip install chp-smoother[fast]`).
+- NumPy only, with SciPy's LAPACK banded routines used when installed (`pip install hpspline[fast]`).

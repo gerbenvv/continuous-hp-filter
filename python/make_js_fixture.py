@@ -1,4 +1,4 @@
-"""Writes reference results from `chp.py` to `javascript/test/fixture.json` for the JS tests."""
+"""Writes reference results of `hpspline.py` to `javascript/test/fixture.json` for the JS tests."""
 
 import json
 import logging
@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 
-from chp import CHPSmoother, hp_filter, select_lambda
+from hpspline import CHPSmoother, hp_filter, select_lambda
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 

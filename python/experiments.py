@@ -16,8 +16,8 @@ from typing import Any
 import numpy as np
 from scipy.interpolate import make_smoothing_spline
 
-import chp
-from chp import CHPSmoother, hp_filter, select_lambda
+import hpspline
+from hpspline import CHPSmoother, hp_filter, select_lambda
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -247,7 +247,7 @@ def run_hp_experiment(numbers: NumberCollector) -> None:
     hp_month_square = hp_filter(y_month, 1600.0 * 3**2)
     hp_year_square = hp_filter(y_year, 1600.0 / 4**2)
 
-    bandwidth = chp.lambda_from_hp(1600.0, 0.25)
+    bandwidth = hpspline.lambda_from_hp(1600.0, 0.25)
 
     numbers.add("equivalentBandwidth", bandwidth, "{:.2f}")
     numbers.add("cutoffYears", 2 * np.pi * bandwidth, "{:.1f}")
@@ -330,7 +330,7 @@ def run_bayesian_experiment(numbers: NumberCollector) -> None:
 
     # With `p = delta f'`, the Hermite parameters are `(h, p) = scale (f, f')`.
     scale = np.diag([1, delta, 1, delta])
-    hermite = scale @ (chp.ELEMENT_STIFFNESS / delta**3) @ scale
+    hermite = scale @ (hpspline.ELEMENT_STIFFNESS / delta**3) @ scale
 
     numbers.add("iwpError", np.max(np.abs(iwp - hermite)) / np.max(np.abs(hermite)), "{:.1e}")
 

@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from chp import CHPSmoother, hermite_basis
+from hpspline import CHPSmoother, hermite_basis
 
 try:
     from scipy.interpolate import make_smoothing_spline

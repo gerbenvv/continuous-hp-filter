@@ -3,7 +3,7 @@ build-backend = "setuptools.build_meta"
 requires = [ "setuptools>=77" ]
 
 [project]
-name = "chp-smoother"
+name = "hpspline"
 version = "1.0.0"
 description = """\
     Cubic smoothing splines on a uniform Hermite grid: a continuous Hodrick-Prescott filter with linear-time Bayesian \
@@ -26,7 +26,7 @@ optional-dependencies.experiments = [ "scipy" ]
 optional-dependencies.fast = [ "scipy" ]
 
 [tool.setuptools]
-py-modules = [ "chp" ]
+py-modules = [ "hpspline" ]
 package-dir = { "" = "python" }
 
 [tool.black]
@@ -37,7 +37,7 @@ line-length = 100
 profile = "black"
 line_length = 100
 combine_as_imports = true
-known_first_party = [ "chp" ]
+known_first_party = [ "hpspline" ]
 
 [tool.flake8]
 max-line-length = 100

@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from chp import hp_filter, hp_from_lambda, lambda_from_hp
+from hpspline import hp_filter, hp_from_lambda, lambda_from_hp
 
 
 class HPFilterTest(unittest.TestCase):

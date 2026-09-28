@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from chp import select_lambda
+from hpspline import select_lambda
 
 
 class SelectLambdaTest(unittest.TestCase):

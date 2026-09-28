@@ -44,6 +44,6 @@ jobs:
                         found { print }
                     ' CHANGELOG.md > release-notes.md
                     test -s release-notes.md
-                    gh release create "${GITHUB_REF_NAME}" --title "chp-smoother ${GITHUB_REF_NAME}" --notes-file release-notes.md dist/*
+                    gh release create "${GITHUB_REF_NAME}" --title "hpspline ${GITHUB_REF_NAME}" --notes-file release-notes.md dist/*
                 env:
                     GH_TOKEN: ${{ github.token }}
