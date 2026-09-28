@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 (2026-09-28)
+
+- `CHPSmoother` is now `HPSpline`, and the JavaScript global `CHP` is now `hpspline` (in
+  `hpspline.js`), so every name matches the package. 1.0.0 is yanked.
+
 ## 1.0.0 (2026-09-28)
 
 The first release of `hpspline`, the Python implementation of the continuous Hodrick–Prescott

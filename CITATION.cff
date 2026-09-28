@@ -10,7 +10,7 @@ authors:
 repository-code: "https://github.com/gerbenvv/continuous-hp-filter"
 url: "https://github.com/gerbenvv/continuous-hp-filter"
 license: MIT
-version: 1.0.0
+version: 1.0.1
 date-released: "2026-09-27"
 keywords:
     - smoothing spline
